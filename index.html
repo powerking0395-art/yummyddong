@@ -1,108 +1,362 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>자동차 연비 예측 계산기</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 30px 20px;
-      background: #f7f7f7;
-      color: #222;
+      font-family: Arial, "Noto Sans KR", sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      background: #f4f7fb;
+      color: #172033;
     }
 
     .container {
+      max-width: 1000px;
+      margin: 0 auto;
       background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    /* =========================
+       제목
+    ========================= */
+
+    .header {
+      margin-bottom: 35px;
+    }
+
+    .header-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 14px;
+      background: #eff6ff;
+      border-radius: 14px;
+      font-size: 25px;
     }
 
     h1 {
-      margin-top: 0;
+      margin: 0 0 10px;
+      font-size: 32px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -1px;
     }
 
-    .description {
+    .subtitle {
+      margin: 0;
+      color: #64748b;
+      font-size: 15px;
       line-height: 1.7;
-      margin-bottom: 25px;
+    }
+
+    /* =========================
+       설명 카드
+    ========================= */
+
+    .info-card {
+      margin-bottom: 30px;
+      padding: 22px 24px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      color: #475569;
+      line-height: 1.8;
+    }
+
+    .info-card h3 {
+      margin: 0 0 10px;
+      color: #1e293b;
+      font-size: 17px;
+    }
+
+    .info-card h3:not(:first-child) {
+      margin-top: 20px;
+    }
+
+    .info-card ul,
+    .info-card ol {
+      margin: 8px 0 0;
+      padding-left: 22px;
+    }
+
+    /* =========================
+       입력 영역
+    ========================= */
+
+    .input-card {
+      padding: 26px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
     }
 
     label {
       display: block;
-      font-weight: bold;
-      margin-top: 20px;
-      margin-bottom: 8px;
+      margin-bottom: 9px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
     }
 
-    input, select {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    label:not(:first-child) {
+      margin-top: 22px;
     }
+
+    input,
+    select {
+      width: 100%;
+      padding: 15px 16px;
+      font-size: 16px;
+      color: #0f172a;
+      background: #f8fafc;
+      border: 1px solid #dbe3ef;
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus,
+    select:focus {
+      background: white;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    /* =========================
+       메인 버튼
+    ========================= */
 
     button {
-      margin-top: 20px;
-      padding: 13px 20px;
+      width: 100%;
+      margin-top: 24px;
+      padding: 15px 20px;
       border: none;
-      border-radius: 8px;
-      background: #2563eb;
+      border-radius: 12px;
+      background: #1d4ed8;
       color: white;
       font-size: 16px;
+      font-weight: 700;
       cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 5px 14px rgba(29, 78, 216, 0.2);
     }
 
     button:hover {
-      background: #1d4ed8;
+      background: #1e40af;
+      transform: translateY(-1px);
+      box-shadow: 0 7px 18px rgba(29, 78, 216, 0.25);
     }
 
-    .result {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f1f5f9;
-      border-radius: 8px;
-      white-space: pre-line;
-      line-height: 1.7;
+    button:active {
+      transform: translateY(0);
     }
 
-    canvas {
-      width: 100%;
-      max-width: 900px;
-      height: 500px;
-      margin-top: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: white;
-    }
-
-    hr {
-      margin: 40px 0;
-      border: none;
-      border-top: 1px solid #ddd;
-    }
+    /* =========================
+       상태
+    ========================= */
 
     .loading {
-      color: #666;
-      margin-top: 10px;
+      margin-top: 15px;
+      color: #64748b;
+      font-size: 14px;
     }
 
     .error {
+      margin-top: 15px;
       color: #dc2626;
-      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    /* =========================
+       결과
+    ========================= */
+
+    .result {
+      margin-top: 24px;
+      padding: 26px;
+      background: linear-gradient(
+        135deg,
+        #eff6ff,
+        #f8fafc
+      );
+      border: 1px solid #dbeafe;
+      border-radius: 18px;
+      white-space: pre-line;
+      line-height: 1.9;
+      color: #1e293b;
+      font-size: 16px;
+    }
+
+    /* =========================
+       그래프 카드
+    ========================= */
+
+    .chart-card {
+      margin-top: 24px;
+      padding: 20px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+
+    .chart-title {
+      margin: 0 0 15px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 900px;
+      height: auto;
+      margin: 0 auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: white;
+    }
+
+    /* =========================
+       구분선
+    ========================= */
+
+    hr {
+      margin: 50px 0;
+      border: none;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    /* =========================
+       모델 성능
+    ========================= */
+
+    .section-title {
+      margin-bottom: 10px;
+      font-size: 24px;
+      color: #0f172a;
+    }
+
+    .section-description {
+      margin-bottom: 24px;
+      color: #64748b;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .comparison-card {
+      padding: 20px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
     }
 
     .evaluation {
-      margin-top: 20px;
+      margin-top: 24px;
+      padding: 24px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      line-height: 1.9;
+      color: #475569;
+    }
+
+    .evaluation h3 {
+      margin-top: 0;
+      color: #0f172a;
+    }
+
+    .evaluation ul {
+      margin-bottom: 0;
+    }
+
+    /* =========================
+       하단 안내
+    ========================= */
+
+    .footer-info {
+      margin-top: 30px;
       padding: 20px;
       background: #f8fafc;
-      border-radius: 8px;
+      border-radius: 14px;
+      color: #64748b;
+      font-size: 13px;
       line-height: 1.8;
+    }
+
+    /* =========================
+       모바일
+    ========================= */
+
+    @media (max-width: 700px) {
+
+      body {
+        padding: 16px;
+      }
+
+      .container {
+        padding: 22px 16px;
+        border-radius: 18px;
+      }
+
+      .header {
+        margin-bottom: 25px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+
+      .info-card {
+        padding: 18px;
+      }
+
+      .input-card {
+        padding: 20px;
+      }
+
+      input,
+      select,
+      button {
+        font-size: 15px;
+      }
+
+      .result {
+        padding: 20px;
+      }
+
+      .chart-card,
+      .comparison-card {
+        padding: 12px;
+      }
+
+      hr {
+        margin: 35px 0;
+      }
+
+      .section-title {
+        font-size: 21px;
+      }
     }
   </style>
 </head>
@@ -111,18 +365,46 @@
 
 <div class="container">
 
-  <h1>🚗 자동차 연비 예측 계산기</h1>
+  <!-- =========================
+       HEADER
+  ========================= -->
 
-  <div class="description">
-    자동차 무게를 입력하면 기존 자동차 데이터를 학습한 모델이
-    예상 연비를 계산합니다.
+  <div class="header">
+
+    <div class="header-icon">
+      🚗
+    </div>
+
+    <h1>자동차 연비 예측 계산기</h1>
+
+    <p class="subtitle">
+      자동차 무게를 입력하면 기존 자동차 데이터를 학습한
+      회귀 모델을 이용하여 예상 연비를 계산합니다.
+    </p>
+
+  </div>
+
+
+  <!-- =========================
+       설명
+  ========================= -->
+
+  <div class="info-card">
 
     <h3>예측 방법</h3>
 
     <ul>
-      <li><b>선형회귀:</b> 데이터의 경향을 직선으로 표현하여 예측합니다.</li>
-      <li><b>비선형회귀:</b> 데이터의 경향을 곡선으로 표현하여 예측합니다.</li>
+      <li>
+        <b>선형회귀</b>:
+        데이터의 경향을 직선으로 표현하여 예측합니다.
+      </li>
+
+      <li>
+        <b>비선형회귀</b>:
+        데이터의 경향을 곡선으로 표현하여 예측합니다.
+      </li>
     </ul>
+
 
     <h3>사용 방법</h3>
 
@@ -132,71 +414,163 @@
       <li>연비 예측하기 버튼을 누릅니다.</li>
       <li>예상 연비와 그래프를 확인합니다.</li>
     </ol>
+
   </div>
 
 
-  <label for="weight">자동차 무게 입력 (파운드)</label>
+  <!-- =========================
+       입력
+  ========================= -->
 
-  <input
-    type="number"
-    id="weight"
-    value="3000"
-    min="1"
+  <div class="input-card">
+
+    <label for="weight">
+      자동차 무게 입력 (파운드)
+    </label>
+
+    <input
+      type="number"
+      id="weight"
+      value="3000"
+      min="1"
+    >
+
+
+    <label for="model">
+      예측 모델 선택
+    </label>
+
+    <select id="model">
+
+      <option value="linear">
+        선형회귀
+      </option>
+
+      <option value="poly">
+        비선형회귀
+      </option>
+
+    </select>
+
+
+    <button onclick="predictMPG()">
+      🚘 연비 예측하기
+    </button>
+
+  </div>
+
+
+  <!-- =========================
+       데이터 상태
+  ========================= -->
+
+  <div
+    id="status"
+    class="loading"
   >
-
-
-  <label for="model">예측 모델 선택</label>
-
-  <select id="model">
-    <option value="linear">선형회귀</option>
-    <option value="poly">비선형회귀</option>
-  </select>
-
-
-  <button onclick="predictMPG()">
-    연비 예측하기
-  </button>
-
-  <div id="status" class="loading">
     자동차 데이터를 불러오는 중...
   </div>
 
-  <div id="result" class="result" style="display:none;"></div>
 
-  <canvas id="chart" width="900" height="500"></canvas>
+  <!-- =========================
+       결과
+  ========================= -->
+
+  <div
+    id="result"
+    class="result"
+    style="display:none;"
+  ></div>
+
+
+  <!-- =========================
+       예측 그래프
+  ========================= -->
+
+  <div class="chart-card">
+
+    <div class="chart-title">
+      📈 자동차 무게와 연비 관계
+    </div>
+
+    <canvas
+      id="chart"
+      width="900"
+      height="500"
+    ></canvas>
+
+  </div>
 
 
   <hr>
 
 
-  <h2>📊 모델 성능 비교</h2>
+  <!-- =========================
+       모델 성능 비교
+  ========================= -->
 
-  <p>
-    <b>MSE:</b> 예측 오차를 나타냅니다. 값이 낮을수록 오차가 작습니다.
+  <h2 class="section-title">
+    📊 모델 성능 비교
+  </h2>
+
+  <p class="section-description">
+
+    <b>MSE</b>는 예측 오차를 나타냅니다.
+    값이 낮을수록 오차가 작습니다.
+
     <br>
-    <b>R²:</b> 데이터의 변화 경향을 설명하는 정도입니다.
+
+    <b>R²</b>는 데이터의 변화 경향을
+    모델이 얼마나 설명하는지를 나타냅니다.
     1에 가까울수록 설명력이 높습니다.
+
   </p>
 
-  <button onclick="compareModels()">
-    모델 성능 비교하기
-  </button>
 
-  <canvas id="comparisonChart" width="900" height="400"></canvas>
+  <div class="comparison-card">
 
-  <div id="evaluation" class="evaluation">
+    <button onclick="compareModels()">
+      모델 성능 비교하기
+    </button>
+
+    <canvas
+      id="comparisonChart"
+      width="900"
+      height="400"
+    ></canvas>
+
+  </div>
+
+
+  <!-- =========================
+       평가 결과
+  ========================= -->
+
+  <div
+    id="evaluation"
+    class="evaluation"
+  >
     모델 평가 결과를 계산하는 중...
   </div>
 
-  <hr>
 
-  <p>
-    ※ MPG는 미국식 연비 단위이며 km/L로 변환하여 함께 표시합니다.
-  </p>
+  <!-- =========================
+       하단 안내
+  ========================= -->
 
-  <p>
-    ※ 실제 연비는 운전 습관과 도로 상태 등에 따라 달라질 수 있습니다.
-  </p>
+  <div class="footer-info">
+
+    <div>
+      ※ MPG는 미국식 연비 단위이며
+      km/L로 변환하여 함께 표시합니다.
+    </div>
+
+    <div>
+      ※ 실제 연비는 운전 습관과 도로 상태 등에 따라
+      달라질 수 있습니다.
+    </div>
+
+  </div>
 
 </div>
 
@@ -207,11 +581,13 @@ const DATA_URL =
   "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/mpg.csv";
 
 let data = [];
+
 let linearModel = null;
 let polyModel = null;
 
 let linearMSE = 0;
 let polyMSE = 0;
+
 let linearR2 = 0;
 let polyR2 = 0;
 
@@ -224,29 +600,53 @@ async function loadData() {
 
   try {
 
-    const response = await fetch(DATA_URL);
+    const response =
+      await fetch(DATA_URL);
 
     if (!response.ok) {
-      throw new Error("데이터를 불러오지 못했습니다.");
+
+      throw new Error(
+        "데이터를 불러오지 못했습니다."
+      );
+
     }
 
-    const csv = await response.text();
+    const csv =
+      await response.text();
 
-    const lines = csv.trim().split("\n");
+    const lines =
+      csv.trim().split("\n");
 
-    const headers = lines[0].split(",");
+    const headers =
+      lines[0].split(",");
 
-    const weightIndex = headers.indexOf("weight");
-    const mpgIndex = headers.indexOf("mpg");
+    const weightIndex =
+      headers.indexOf("weight");
 
-    for (let i = 1; i < lines.length; i++) {
+    const mpgIndex =
+      headers.indexOf("mpg");
 
-      const row = parseCSVLine(lines[i]);
 
-      const weight = Number(row[weightIndex]);
-      const mpg = Number(row[mpgIndex]);
+    for (
+      let i = 1;
+      i < lines.length;
+      i++
+    ) {
 
-      if (!isNaN(weight) && !isNaN(mpg)) {
+      const row =
+        parseCSVLine(lines[i]);
+
+      const weight =
+        Number(row[weightIndex]);
+
+      const mpg =
+        Number(row[mpgIndex]);
+
+
+      if (
+        !isNaN(weight) &&
+        !isNaN(mpg)
+      ) {
 
         data.push({
           weight: weight,
@@ -254,58 +654,96 @@ async function loadData() {
         });
 
       }
+
     }
+
 
     trainModels();
 
-    document.getElementById("status").textContent =
-      "데이터 준비 완료 ✓";
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "자동차 데이터 준비 완료 ✓";
+
 
     compareModels();
 
+
   } catch (error) {
 
-    document.getElementById("status").className = "error";
+    document.getElementById(
+      "status"
+    ).className = "error";
 
-    document.getElementById("status").textContent =
+
+    document.getElementById(
+      "status"
+    ).textContent =
       "데이터를 불러오는 데 실패했습니다.";
 
+
     console.error(error);
+
   }
+
 }
 
 
-/* CSV 한 줄 파싱 */
+/* ==============================
+   CSV 파싱
+============================== */
 
 function parseCSVLine(line) {
 
   const result = [];
+
   let current = "";
+
   let insideQuotes = false;
 
-  for (let i = 0; i < line.length; i++) {
 
-    const char = line[i];
+  for (
+    let i = 0;
+    i < line.length;
+    i++
+  ) {
+
+    const char =
+      line[i];
+
 
     if (char === '"') {
 
-      insideQuotes = !insideQuotes;
+      insideQuotes =
+        !insideQuotes;
 
-    } else if (char === "," && !insideQuotes) {
+    }
+
+    else if (
+      char === "," &&
+      !insideQuotes
+    ) {
 
       result.push(current);
+
       current = "";
 
-    } else {
+    }
+
+    else {
 
       current += char;
 
     }
+
   }
+
 
   result.push(current);
 
   return result;
+
 }
 
 
@@ -317,13 +755,29 @@ function solveMatrix(A, b) {
 
   const n = A.length;
 
-  const matrix = A.map((row, i) => [...row, b[i]]);
+  const matrix =
+    A.map(
+      (row, i) => [
+        ...row,
+        b[i]
+      ]
+    );
 
-  for (let i = 0; i < n; i++) {
+
+  for (
+    let i = 0;
+    i < n;
+    i++
+  ) {
 
     let maxRow = i;
 
-    for (let k = i + 1; k < n; k++) {
+
+    for (
+      let k = i + 1;
+      k < n;
+      k++
+    ) {
 
       if (
         Math.abs(matrix[k][i]) >
@@ -333,43 +787,84 @@ function solveMatrix(A, b) {
         maxRow = k;
 
       }
+
     }
 
-    [matrix[i], matrix[maxRow]] =
-      [matrix[maxRow], matrix[i]];
 
-    for (let k = i + 1; k < n; k++) {
+    [
+      matrix[i],
+      matrix[maxRow]
+    ] =
+    [
+      matrix[maxRow],
+      matrix[i]
+    ];
+
+
+    for (
+      let k = i + 1;
+      k < n;
+      k++
+    ) {
 
       const factor =
-        matrix[k][i] / matrix[i][i];
+        matrix[k][i] /
+        matrix[i][i];
 
-      for (let j = i; j <= n; j++) {
+
+      for (
+        let j = i;
+        j <= n;
+        j++
+      ) {
 
         matrix[k][j] -=
-          factor * matrix[i][j];
+          factor *
+          matrix[i][j];
 
       }
+
     }
+
   }
 
-  const x = new Array(n).fill(0);
 
-  for (let i = n - 1; i >= 0; i--) {
+  const x =
+    new Array(n).fill(0);
 
-    let sum = matrix[i][n];
 
-    for (let j = i + 1; j < n; j++) {
+  for (
+    let i = n - 1;
+    i >= 0;
+    i--
+  ) {
 
-      sum -= matrix[i][j] * x[j];
+    let sum =
+      matrix[i][n];
+
+
+    for (
+      let j = i + 1;
+      j < n;
+      j++
+    ) {
+
+      sum -=
+        matrix[i][j] *
+        x[j];
 
     }
+
 
     x[i] =
-      sum / matrix[i][i];
+      sum /
+      matrix[i][i];
 
   }
 
+
   return x;
+
 }
 
 
@@ -377,35 +872,60 @@ function solveMatrix(A, b) {
    선형회귀
 ============================== */
 
-function trainLinearModel(trainingData) {
+function trainLinearModel(
+  trainingData
+) {
 
   let sumX = 0;
   let sumY = 0;
   let sumXX = 0;
   let sumXY = 0;
 
-  const n = trainingData.length;
+
+  const n =
+    trainingData.length;
+
 
   trainingData.forEach(d => {
 
     sumX += d.weight;
+
     sumY += d.mpg;
-    sumXX += d.weight * d.weight;
-    sumXY += d.weight * d.mpg;
+
+    sumXX +=
+      d.weight *
+      d.weight;
+
+    sumXY +=
+      d.weight *
+      d.mpg;
 
   });
 
+
   const slope =
-    (n * sumXY - sumX * sumY) /
-    (n * sumXX - sumX * sumX);
+    (
+      n * sumXY -
+      sumX * sumY
+    ) /
+    (
+      n * sumXX -
+      sumX * sumX
+    );
+
 
   const intercept =
-    (sumY - slope * sumX) / n;
+    (
+      sumY -
+      slope * sumX
+    ) / n;
+
 
   return {
     slope: slope,
     intercept: intercept
   };
+
 }
 
 
@@ -413,7 +933,9 @@ function trainLinearModel(trainingData) {
    2차 다항회귀
 ============================== */
 
-function trainPolynomialModel(trainingData) {
+function trainPolynomialModel(
+  trainingData
+) {
 
   let A = [
     [0, 0, 0],
@@ -421,12 +943,22 @@ function trainPolynomialModel(trainingData) {
     [0, 0, 0]
   ];
 
-  let B = [0, 0, 0];
+
+  let B = [
+    0,
+    0,
+    0
+  ];
+
 
   trainingData.forEach(d => {
 
-    const x = d.weight;
-    const y = d.mpg;
+    const x =
+      d.weight;
+
+    const y =
+      d.mpg;
+
 
     const values = [
       1,
@@ -434,28 +966,48 @@ function trainPolynomialModel(trainingData) {
       x * x
     ];
 
-    for (let i = 0; i < 3; i++) {
+
+    for (
+      let i = 0;
+      i < 3;
+      i++
+    ) {
 
       B[i] +=
         values[i] * y;
 
-      for (let j = 0; j < 3; j++) {
+
+      for (
+        let j = 0;
+        j < 3;
+        j++
+      ) {
 
         A[i][j] +=
-          values[i] * values[j];
+          values[i] *
+          values[j];
 
       }
+
     }
+
   });
+
 
   const coefficients =
     solveMatrix(A, B);
 
+
   return {
+
     a: coefficients[0],
+
     b: coefficients[1],
+
     c: coefficients[2]
+
   };
+
 }
 
 
@@ -463,22 +1015,30 @@ function trainPolynomialModel(trainingData) {
    예측
 ============================== */
 
-function linearPredict(model, x) {
+function linearPredict(
+  model,
+  x
+) {
 
   return (
     model.intercept +
     model.slope * x
   );
+
 }
 
 
-function polynomialPredict(model, x) {
+function polynomialPredict(
+  model,
+  x
+) {
 
   return (
     model.a +
     model.b * x +
     model.c * x * x
   );
+
 }
 
 
@@ -489,95 +1049,164 @@ function polynomialPredict(model, x) {
 function trainModels() {
 
   const shuffled =
-    [...data].sort(() => Math.random() - 0.5);
+    [...data].sort(
+      () => Math.random() - 0.5
+    );
+
 
   const testSize =
-    Math.floor(shuffled.length * 0.2);
+    Math.floor(
+      shuffled.length * 0.2
+    );
+
 
   const testData =
-    shuffled.slice(0, testSize);
+    shuffled.slice(
+      0,
+      testSize
+    );
+
 
   const trainData =
-    shuffled.slice(testSize);
+    shuffled.slice(
+      testSize
+    );
+
 
   linearModel =
-    trainLinearModel(trainData);
+    trainLinearModel(
+      trainData
+    );
+
 
   polyModel =
-    trainPolynomialModel(trainData);
+    trainPolynomialModel(
+      trainData
+    );
 
 
   const linearPredictions =
-    testData.map(d =>
-      linearPredict(linearModel, d.weight)
+    testData.map(
+      d =>
+        linearPredict(
+          linearModel,
+          d.weight
+        )
     );
 
+
   const polyPredictions =
-    testData.map(d =>
-      polynomialPredict(polyModel, d.weight)
+    testData.map(
+      d =>
+        polynomialPredict(
+          polyModel,
+          d.weight
+        )
     );
 
 
   linearMSE =
     calculateMSE(
-      testData.map(d => d.mpg),
+      testData.map(
+        d => d.mpg
+      ),
       linearPredictions
     );
 
+
   polyMSE =
     calculateMSE(
-      testData.map(d => d.mpg),
+      testData.map(
+        d => d.mpg
+      ),
       polyPredictions
     );
 
 
   linearR2 =
     calculateR2(
-      testData.map(d => d.mpg),
+      testData.map(
+        d => d.mpg
+      ),
       linearPredictions
     );
 
+
   polyR2 =
     calculateR2(
-      testData.map(d => d.mpg),
+      testData.map(
+        d => d.mpg
+      ),
       polyPredictions
     );
+
 }
 
 
-/* MSE */
+/* ==============================
+   MSE
+============================== */
 
-function calculateMSE(actual, predicted) {
+function calculateMSE(
+  actual,
+  predicted
+) {
 
   let total = 0;
 
-  for (let i = 0; i < actual.length; i++) {
+
+  for (
+    let i = 0;
+    i < actual.length;
+    i++
+  ) {
 
     const error =
-      actual[i] - predicted[i];
+      actual[i] -
+      predicted[i];
 
-    total += error * error;
+
+    total +=
+      error * error;
 
   }
 
-  return total / actual.length;
+
+  return (
+    total /
+    actual.length
+  );
+
 }
 
 
-/* R² */
+/* ==============================
+   R²
+============================== */
 
-function calculateR2(actual, predicted) {
+function calculateR2(
+  actual,
+  predicted
+) {
 
   const mean =
     actual.reduce(
       (a, b) => a + b,
       0
-    ) / actual.length;
+    ) /
+    actual.length;
+
 
   let ssTot = 0;
+
   let ssRes = 0;
 
-  for (let i = 0; i < actual.length; i++) {
+
+  for (
+    let i = 0;
+    i < actual.length;
+    i++
+  ) {
 
     ssTot +=
       Math.pow(
@@ -585,15 +1214,22 @@ function calculateR2(actual, predicted) {
         2
       );
 
+
     ssRes +=
       Math.pow(
-        actual[i] - predicted[i],
+        actual[i] -
+        predicted[i],
         2
       );
 
   }
 
-  return 1 - ssRes / ssTot;
+
+  return (
+    1 -
+    ssRes / ssTot
+  );
+
 }
 
 
@@ -603,33 +1239,54 @@ function calculateR2(actual, predicted) {
 
 function predictMPG() {
 
-  if (!linearModel || !polyModel) {
+  if (
+    !linearModel ||
+    !polyModel
+  ) {
 
-    alert("데이터를 아직 불러오는 중입니다.");
+    alert(
+      "데이터를 아직 불러오는 중입니다."
+    );
 
     return;
+
   }
+
 
   const weight =
     Number(
-      document.getElementById("weight").value
+      document.getElementById(
+        "weight"
+      ).value
     );
 
-  if (!weight || weight <= 0) {
+
+  if (
+    !weight ||
+    weight <= 0
+  ) {
 
     alert(
       "자동차 무게를 올바르게 입력해 주세요."
     );
 
     return;
+
   }
 
+
   const modelChoice =
-    document.getElementById("model").value;
+    document.getElementById(
+      "model"
+    ).value;
+
 
   let prediction;
 
-  if (modelChoice === "linear") {
+
+  if (
+    modelChoice === "linear"
+  ) {
 
     prediction =
       linearPredict(
@@ -637,7 +1294,9 @@ function predictMPG() {
         weight
       );
 
-  } else {
+  }
+
+  else {
 
     prediction =
       polynomialPredict(
@@ -649,7 +1308,8 @@ function predictMPG() {
 
 
   const kmPerLiter =
-    prediction * 0.425144;
+    prediction *
+    0.425144;
 
 
   const result =
@@ -670,17 +1330,24 @@ function predictMPG() {
 
 
   const resultBox =
-    document.getElementById("result");
+    document.getElementById(
+      "result"
+    );
 
-  resultBox.style.display = "block";
 
-  resultBox.textContent = result;
+  resultBox.style.display =
+    "block";
+
+
+  resultBox.textContent =
+    result;
 
 
   drawPredictionChart(
     weight,
     prediction
   );
+
 }
 
 
@@ -694,13 +1361,21 @@ function drawPredictionChart(
 ) {
 
   const canvas =
-    document.getElementById("chart");
+    document.getElementById(
+      "chart"
+    );
+
 
   const ctx =
     canvas.getContext("2d");
 
-  const width = canvas.width;
-  const height = canvas.height;
+
+  const width =
+    canvas.width;
+
+  const height =
+    canvas.height;
+
 
   ctx.clearRect(
     0,
@@ -711,19 +1386,31 @@ function drawPredictionChart(
 
 
   const weights =
-    data.map(d => d.weight);
+    data.map(
+      d => d.weight
+    );
+
 
   const mpgs =
-    data.map(d => d.mpg);
+    data.map(
+      d => d.mpg
+    );
 
 
   const minX =
-    Math.min(...weights);
+    Math.min(
+      ...weights
+    );
+
 
   const maxX =
-    Math.max(...weights);
+    Math.max(
+      ...weights
+    );
+
 
   const minY = 0;
+
 
   const maxY =
     Math.max(
@@ -740,45 +1427,69 @@ function drawPredictionChart(
 
   function xScale(x) {
 
-    return left +
-      (x - minX) /
-      (maxX - minX) *
-      (width - left - right);
+    return (
+      left +
+      (
+        (x - minX) /
+        (maxX - minX)
+      ) *
+      (
+        width -
+        left -
+        right
+      )
+    );
 
   }
 
 
   function yScale(y) {
 
-    return height - bottom -
-      (y - minY) /
-      (maxY - minY) *
-      (height - top - bottom);
+    return (
+      height -
+      bottom -
+      (
+        (y - minY) /
+        (maxY - minY)
+      ) *
+      (
+        height -
+        top -
+        bottom
+      )
+    );
 
   }
 
 
   /* 축 */
 
-  ctx.strokeStyle = "#333";
+  ctx.strokeStyle =
+    "#334155";
+
   ctx.lineWidth = 1;
 
+
   ctx.beginPath();
+
 
   ctx.moveTo(
     left,
     top
   );
 
+
   ctx.lineTo(
     left,
     height - bottom
   );
 
+
   ctx.lineTo(
     width - right,
     height - bottom
   );
+
 
   ctx.stroke();
 
@@ -786,11 +1497,13 @@ function drawPredictionChart(
   /* 실제 데이터 */
 
   ctx.fillStyle =
-    "rgba(50,100,200,0.45)";
+    "rgba(37, 99, 235, 0.4)";
+
 
   data.forEach(d => {
 
     ctx.beginPath();
+
 
     ctx.arc(
       xScale(d.weight),
@@ -799,6 +1512,7 @@ function drawPredictionChart(
       0,
       Math.PI * 2
     );
+
 
     ctx.fill();
 
@@ -813,6 +1527,7 @@ function drawPredictionChart(
 
     ctx.beginPath();
 
+
     for (
       let i = 0;
       i <= 200;
@@ -821,11 +1536,17 @@ function drawPredictionChart(
 
       const x =
         minX +
-        (maxX - minX) *
-        i / 200;
+        (
+          maxX -
+          minX
+        ) *
+        i /
+        200;
+
 
       const y =
         predictionFunction(x);
+
 
       if (i === 0) {
 
@@ -834,7 +1555,9 @@ function drawPredictionChart(
           yScale(y)
         );
 
-      } else {
+      }
+
+      else {
 
         ctx.lineTo(
           xScale(x),
@@ -844,6 +1567,7 @@ function drawPredictionChart(
       }
 
     }
+
 
     ctx.stroke();
 
@@ -870,36 +1594,99 @@ function drawPredictionChart(
 
   /* 예측값 */
 
-  ctx.fillStyle = "red";
+  ctx.fillStyle =
+    "#ef4444";
+
 
   const px =
-    xScale(selectedWeight);
+    xScale(
+      selectedWeight
+    );
+
 
   const py =
-    yScale(prediction);
+    yScale(
+      prediction
+    );
 
 
   ctx.beginPath();
 
-  ctx.moveTo(px, py - 12);
-  ctx.lineTo(px + 4, py - 4);
-  ctx.lineTo(px + 12, py - 4);
-  ctx.lineTo(px + 6, py + 2);
-  ctx.lineTo(px + 9, py + 10);
-  ctx.lineTo(px, py + 5);
-  ctx.lineTo(px - 9, py + 10);
-  ctx.lineTo(px - 6, py + 2);
-  ctx.lineTo(px - 12, py - 4);
-  ctx.lineTo(px - 4, py - 4);
+
+  ctx.moveTo(
+    px,
+    py - 12
+  );
+
+
+  ctx.lineTo(
+    px + 4,
+    py - 4
+  );
+
+
+  ctx.lineTo(
+    px + 12,
+    py - 4
+  );
+
+
+  ctx.lineTo(
+    px + 6,
+    py + 2
+  );
+
+
+  ctx.lineTo(
+    px + 9,
+    py + 10
+  );
+
+
+  ctx.lineTo(
+    px,
+    py + 5
+  );
+
+
+  ctx.lineTo(
+    px - 9,
+    py + 10
+  );
+
+
+  ctx.lineTo(
+    px - 6,
+    py + 2
+  );
+
+
+  ctx.lineTo(
+    px - 12,
+    py - 4
+  );
+
+
+  ctx.lineTo(
+    px - 4,
+    py - 4
+  );
+
+
   ctx.closePath();
+
 
   ctx.fill();
 
 
   /* 축 제목 */
 
-  ctx.fillStyle = "#222";
-  ctx.font = "14px Arial";
+  ctx.fillStyle =
+    "#334155";
+
+  ctx.font =
+    "14px Arial";
+
 
   ctx.fillText(
     "Vehicle Weight (pounds)",
@@ -907,20 +1694,27 @@ function drawPredictionChart(
     height - 20
   );
 
+
   ctx.save();
+
 
   ctx.translate(
     20,
     height / 2
   );
 
-  ctx.rotate(-Math.PI / 2);
+
+  ctx.rotate(
+    -Math.PI / 2
+  );
+
 
   ctx.fillText(
     "Fuel Efficiency (MPG)",
     -70,
     0
   );
+
 
   ctx.restore();
 
@@ -933,8 +1727,13 @@ function drawPredictionChart(
 
 function compareModels() {
 
-  if (!linearModel || !polyModel) {
+  if (
+    !linearModel ||
+    !polyModel
+  ) {
+
     return;
+
   }
 
 
@@ -943,8 +1742,10 @@ function compareModels() {
       "comparisonChart"
     );
 
+
   const ctx =
     canvas.getContext("2d");
+
 
   ctx.clearRect(
     0,
@@ -968,11 +1769,10 @@ function compareModels() {
     );
 
 
-  /* MSE 막대 */
-
   const barWidth = 120;
 
   const x1 = 220;
+
   const x2 = 560;
 
   const baseY = 300;
@@ -983,15 +1783,22 @@ function compareModels() {
   const h1 =
     maxMSE === 0
       ? 0
-      : linearMSE / maxMSE * maxHeight;
+      : linearMSE /
+        maxMSE *
+        maxHeight;
+
 
   const h2 =
     maxMSE === 0
       ? 0
-      : polyMSE / maxMSE * maxHeight;
+      : polyMSE /
+        maxMSE *
+        maxHeight;
 
 
-  ctx.fillStyle = "#3b82f6";
+  ctx.fillStyle =
+    "#2563eb";
+
 
   ctx.fillRect(
     x1,
@@ -999,6 +1806,7 @@ function compareModels() {
     barWidth,
     h1
   );
+
 
   ctx.fillRect(
     x2,
@@ -1008,16 +1816,24 @@ function compareModels() {
   );
 
 
-  ctx.fillStyle = "#222";
-  ctx.font = "16px Arial";
+  ctx.fillStyle =
+    "#222";
 
-  ctx.textAlign = "center";
+
+  ctx.font =
+    "16px Arial";
+
+
+  ctx.textAlign =
+    "center";
+
 
   ctx.fillText(
     "Linear Regression",
     x1 + barWidth / 2,
     baseY + 30
   );
+
 
   ctx.fillText(
     "Polynomial Regression",
@@ -1032,6 +1848,7 @@ function compareModels() {
     baseY - h1 - 10
   );
 
+
   ctx.fillText(
     `MSE: ${polyMSE.toFixed(2)}`,
     x2 + barWidth / 2,
@@ -1039,7 +1856,8 @@ function compareModels() {
   );
 
 
-  ctx.textAlign = "left";
+  ctx.textAlign =
+    "left";
 
 
   document.getElementById(
@@ -1049,11 +1867,27 @@ function compareModels() {
 `<h3>모델 평가 결과</h3>
 
 <ul>
-<li>선형회귀 MSE: ${linearMSE.toFixed(2)}</li>
-<li>비선형회귀 MSE: ${polyMSE.toFixed(2)}</li>
-<li>선형회귀 R²: ${linearR2.toFixed(4)}</li>
-<li>비선형회귀 R²: ${polyR2.toFixed(4)}</li>
+  <li>
+    선형회귀 MSE:
+    ${linearMSE.toFixed(2)}
+  </li>
+
+  <li>
+    비선형회귀 MSE:
+    ${polyMSE.toFixed(2)}
+  </li>
+
+  <li>
+    선형회귀 R²:
+    ${linearR2.toFixed(4)}
+  </li>
+
+  <li>
+    비선형회귀 R²:
+    ${polyR2.toFixed(4)}
+  </li>
 </ul>`;
+
 }
 
 
@@ -1067,3 +1901,4 @@ loadData();
 
 </body>
 </html>
+```
