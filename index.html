@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자동차 연비 예측 계산기</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      background: #f7f7f7;
+      color: #222;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .description {
+      line-height: 1.7;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 13px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      white-space: pre-line;
+      line-height: 1.7;
+    }
+
+    canvas {
+      width: 100%;
+      max-width: 900px;
+      height: 500px;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: white;
+    }
+
+    hr {
+      margin: 40px 0;
+      border: none;
+      border-top: 1px solid #ddd;
+    }
+
+    .loading {
+      color: #666;
+      margin-top: 10px;
+    }
+
+    .error {
+      color: #dc2626;
+      margin-top: 10px;
+    }
+
+    .evaluation {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 8px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🚗 자동차 연비 예측 계산기</h1>
+
+  <div class="description">
+    자동차 무게를 입력하면 기존 자동차 데이터를 학습한 모델이
+    예상 연비를 계산합니다.
+
+    <h3>예측 방법</h3>
+
+    <ul>
+      <li><b>선형회귀:</b> 데이터의 경향을 직선으로 표현하여 예측합니다.</li>
+      <li><b>비선형회귀:</b> 데이터의 경향을 곡선으로 표현하여 예측합니다.</li>
+    </ul>
+
+    <h3>사용 방법</h3>
+
+    <ol>
+      <li>자동차 무게를 파운드 단위로 입력합니다.</li>
+      <li>예측 모델을 선택합니다.</li>
+      <li>연비 예측하기 버튼을 누릅니다.</li>
+      <li>예상 연비와 그래프를 확인합니다.</li>
+    </ol>
+  </div>
+
+
+  <label for="weight">자동차 무게 입력 (파운드)</label>
+
+  <input
+    type="number"
+    id="weight"
+    value="3000"
+    min="1"
+  >
+
+
+  <label for="model">예측 모델 선택</label>
+
+  <select id="model">
+    <option value="linear">선형회귀</option>
+    <option value="poly">비선형회귀</option>
+  </select>
+
+
+  <button onclick="predictMPG()">
+    연비 예측하기
+  </button>
+
+  <div id="status" class="loading">
+    자동차 데이터를 불러오는 중...
+  </div>
+
+  <div id="result" class="result" style="display:none;"></div>
+
+  <canvas id="chart" width="900" height="500"></canvas>
+
+
+  <hr>
+
+
+  <h2>📊 모델 성능 비교</h2>
+
+  <p>
+    <b>MSE:</b> 예측 오차를 나타냅니다. 값이 낮을수록 오차가 작습니다.
+    <br>
+    <b>R²:</b> 데이터의 변화 경향을 설명하는 정도입니다.
+    1에 가까울수록 설명력이 높습니다.
+  </p>
+
+  <button onclick="compareModels()">
+    모델 성능 비교하기
+  </button>
+
+  <canvas id="comparisonChart" width="900" height="400"></canvas>
+
+  <div id="evaluation" class="evaluation">
+    모델 평가 결과를 계산하는 중...
+  </div>
+
+  <hr>
+
+  <p>
+    ※ MPG는 미국식 연비 단위이며 km/L로 변환하여 함께 표시합니다.
+  </p>
+
+  <p>
+    ※ 실제 연비는 운전 습관과 도로 상태 등에 따라 달라질 수 있습니다.
+  </p>
+
+</div>
+
+
+<script>
+
+const DATA_URL =
+  "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/mpg.csv";
+
+let data = [];
+let linearModel = null;
+let polyModel = null;
+
+let linearMSE = 0;
+let polyMSE = 0;
+let linearR2 = 0;
+let polyR2 = 0;
+
+
+/* ==============================
+   CSV 데이터 불러오기
+============================== */
+
+async function loadData() {
+
+  try {
+
+    const response = await fetch(DATA_URL);
+
+    if (!response.ok) {
+      throw new Error("데이터를 불러오지 못했습니다.");
+    }
+
+    const csv = await response.text();
+
+    const lines = csv.trim().split("\n");
+
+    const headers = lines[0].split(",");
+
+    const weightIndex = headers.indexOf("weight");
+    const mpgIndex = headers.indexOf("mpg");
+
+    for (let i = 1; i < lines.length; i++) {
+
+      const row = parseCSVLine(lines[i]);
+
+      const weight = Number(row[weightIndex]);
+      const mpg = Number(row[mpgIndex]);
+
+      if (!isNaN(weight) && !isNaN(mpg)) {
+
+        data.push({
+          weight: weight,
+          mpg: mpg
+        });
+
+      }
+    }
+
+    trainModels();
+
+    document.getElementById("status").textContent =
+      "데이터 준비 완료 ✓";
+
+    compareModels();
+
+  } catch (error) {
+
+    document.getElementById("status").className = "error";
+
+    document.getElementById("status").textContent =
+      "데이터를 불러오는 데 실패했습니다.";
+
+    console.error(error);
+  }
+}
+
+
+/* CSV 한 줄 파싱 */
+
+function parseCSVLine(line) {
+
+  const result = [];
+  let current = "";
+  let insideQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+
+    const char = line[i];
+
+    if (char === '"') {
+
+      insideQuotes = !insideQuotes;
+
+    } else if (char === "," && !insideQuotes) {
+
+      result.push(current);
+      current = "";
+
+    } else {
+
+      current += char;
+
+    }
+  }
+
+  result.push(current);
+
+  return result;
+}
+
+
+/* ==============================
+   행렬 계산
+============================== */
+
+function solveMatrix(A, b) {
+
+  const n = A.length;
+
+  const matrix = A.map((row, i) => [...row, b[i]]);
+
+  for (let i = 0; i < n; i++) {
+
+    let maxRow = i;
+
+    for (let k = i + 1; k < n; k++) {
+
+      if (
+        Math.abs(matrix[k][i]) >
+        Math.abs(matrix[maxRow][i])
+      ) {
+
+        maxRow = k;
+
+      }
+    }
+
+    [matrix[i], matrix[maxRow]] =
+      [matrix[maxRow], matrix[i]];
+
+    for (let k = i + 1; k < n; k++) {
+
+      const factor =
+        matrix[k][i] / matrix[i][i];
+
+      for (let j = i; j <= n; j++) {
+
+        matrix[k][j] -=
+          factor * matrix[i][j];
+
+      }
+    }
+  }
+
+  const x = new Array(n).fill(0);
+
+  for (let i = n - 1; i >= 0; i--) {
+
+    let sum = matrix[i][n];
+
+    for (let j = i + 1; j < n; j++) {
+
+      sum -= matrix[i][j] * x[j];
+
+    }
+
+    x[i] =
+      sum / matrix[i][i];
+
+  }
+
+  return x;
+}
+
+
+/* ==============================
+   선형회귀
+============================== */
+
+function trainLinearModel(trainingData) {
+
+  let sumX = 0;
+  let sumY = 0;
+  let sumXX = 0;
+  let sumXY = 0;
+
+  const n = trainingData.length;
+
+  trainingData.forEach(d => {
+
+    sumX += d.weight;
+    sumY += d.mpg;
+    sumXX += d.weight * d.weight;
+    sumXY += d.weight * d.mpg;
+
+  });
+
+  const slope =
+    (n * sumXY - sumX * sumY) /
+    (n * sumXX - sumX * sumX);
+
+  const intercept =
+    (sumY - slope * sumX) / n;
+
+  return {
+    slope: slope,
+    intercept: intercept
+  };
+}
+
+
+/* ==============================
+   2차 다항회귀
+============================== */
+
+function trainPolynomialModel(trainingData) {
+
+  let A = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+  ];
+
+  let B = [0, 0, 0];
+
+  trainingData.forEach(d => {
+
+    const x = d.weight;
+    const y = d.mpg;
+
+    const values = [
+      1,
+      x,
+      x * x
+    ];
+
+    for (let i = 0; i < 3; i++) {
+
+      B[i] +=
+        values[i] * y;
+
+      for (let j = 0; j < 3; j++) {
+
+        A[i][j] +=
+          values[i] * values[j];
+
+      }
+    }
+  });
+
+  const coefficients =
+    solveMatrix(A, B);
+
+  return {
+    a: coefficients[0],
+    b: coefficients[1],
+    c: coefficients[2]
+  };
+}
+
+
+/* ==============================
+   예측
+============================== */
+
+function linearPredict(model, x) {
+
+  return (
+    model.intercept +
+    model.slope * x
+  );
+}
+
+
+function polynomialPredict(model, x) {
+
+  return (
+    model.a +
+    model.b * x +
+    model.c * x * x
+  );
+}
+
+
+/* ==============================
+   모델 학습 및 평가
+============================== */
+
+function trainModels() {
+
+  const shuffled =
+    [...data].sort(() => Math.random() - 0.5);
+
+  const testSize =
+    Math.floor(shuffled.length * 0.2);
+
+  const testData =
+    shuffled.slice(0, testSize);
+
+  const trainData =
+    shuffled.slice(testSize);
+
+  linearModel =
+    trainLinearModel(trainData);
+
+  polyModel =
+    trainPolynomialModel(trainData);
+
+
+  const linearPredictions =
+    testData.map(d =>
+      linearPredict(linearModel, d.weight)
+    );
+
+  const polyPredictions =
+    testData.map(d =>
+      polynomialPredict(polyModel, d.weight)
+    );
+
+
+  linearMSE =
+    calculateMSE(
+      testData.map(d => d.mpg),
+      linearPredictions
+    );
+
+  polyMSE =
+    calculateMSE(
+      testData.map(d => d.mpg),
+      polyPredictions
+    );
+
+
+  linearR2 =
+    calculateR2(
+      testData.map(d => d.mpg),
+      linearPredictions
+    );
+
+  polyR2 =
+    calculateR2(
+      testData.map(d => d.mpg),
+      polyPredictions
+    );
+}
+
+
+/* MSE */
+
+function calculateMSE(actual, predicted) {
+
+  let total = 0;
+
+  for (let i = 0; i < actual.length; i++) {
+
+    const error =
+      actual[i] - predicted[i];
+
+    total += error * error;
+
+  }
+
+  return total / actual.length;
+}
+
+
+/* R² */
+
+function calculateR2(actual, predicted) {
+
+  const mean =
+    actual.reduce(
+      (a, b) => a + b,
+      0
+    ) / actual.length;
+
+  let ssTot = 0;
+  let ssRes = 0;
+
+  for (let i = 0; i < actual.length; i++) {
+
+    ssTot +=
+      Math.pow(
+        actual[i] - mean,
+        2
+      );
+
+    ssRes +=
+      Math.pow(
+        actual[i] - predicted[i],
+        2
+      );
+
+  }
+
+  return 1 - ssRes / ssTot;
+}
+
+
+/* ==============================
+   연비 예측
+============================== */
+
+function predictMPG() {
+
+  if (!linearModel || !polyModel) {
+
+    alert("데이터를 아직 불러오는 중입니다.");
+
+    return;
+  }
+
+  const weight =
+    Number(
+      document.getElementById("weight").value
+    );
+
+  if (!weight || weight <= 0) {
+
+    alert(
+      "자동차 무게를 올바르게 입력해 주세요."
+    );
+
+    return;
+  }
+
+  const modelChoice =
+    document.getElementById("model").value;
+
+  let prediction;
+
+  if (modelChoice === "linear") {
+
+    prediction =
+      linearPredict(
+        linearModel,
+        weight
+      );
+
+  } else {
+
+    prediction =
+      polynomialPredict(
+        polyModel,
+        weight
+      );
+
+  }
+
+
+  const kmPerLiter =
+    prediction * 0.425144;
+
+
+  const result =
+
+`선택한 모델: ${
+  modelChoice === "linear"
+    ? "선형회귀"
+    : "비선형회귀"
+}
+
+자동차 무게: ${weight.toFixed(0)} 파운드
+
+예측 연비: ${prediction.toFixed(2)} MPG
+
+약 ${kmPerLiter.toFixed(2)} km/L
+
+※ 실제 연비는 운전 습관과 도로 상태 등에 따라 달라질 수 있습니다.`;
+
+
+  const resultBox =
+    document.getElementById("result");
+
+  resultBox.style.display = "block";
+
+  resultBox.textContent = result;
+
+
+  drawPredictionChart(
+    weight,
+    prediction
+  );
+}
+
+
+/* ==============================
+   예측 그래프
+============================== */
+
+function drawPredictionChart(
+  selectedWeight,
+  prediction
+) {
+
+  const canvas =
+    document.getElementById("chart");
+
+  const ctx =
+    canvas.getContext("2d");
+
+  const width = canvas.width;
+  const height = canvas.height;
+
+  ctx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  const weights =
+    data.map(d => d.weight);
+
+  const mpgs =
+    data.map(d => d.mpg);
+
+
+  const minX =
+    Math.min(...weights);
+
+  const maxX =
+    Math.max(...weights);
+
+  const minY = 0;
+
+  const maxY =
+    Math.max(
+      ...mpgs,
+      prediction
+    ) + 5;
+
+
+  const left = 70;
+  const right = 30;
+  const top = 30;
+  const bottom = 60;
+
+
+  function xScale(x) {
+
+    return left +
+      (x - minX) /
+      (maxX - minX) *
+      (width - left - right);
+
+  }
+
+
+  function yScale(y) {
+
+    return height - bottom -
+      (y - minY) /
+      (maxY - minY) *
+      (height - top - bottom);
+
+  }
+
+
+  /* 축 */
+
+  ctx.strokeStyle = "#333";
+  ctx.lineWidth = 1;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    left,
+    top
+  );
+
+  ctx.lineTo(
+    left,
+    height - bottom
+  );
+
+  ctx.lineTo(
+    width - right,
+    height - bottom
+  );
+
+  ctx.stroke();
+
+
+  /* 실제 데이터 */
+
+  ctx.fillStyle =
+    "rgba(50,100,200,0.45)";
+
+  data.forEach(d => {
+
+    ctx.beginPath();
+
+    ctx.arc(
+      xScale(d.weight),
+      yScale(d.mpg),
+      3,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+  });
+
+
+  /* 회귀선 */
+
+  function drawLine(
+    predictionFunction
+  ) {
+
+    ctx.beginPath();
+
+    for (
+      let i = 0;
+      i <= 200;
+      i++
+    ) {
+
+      const x =
+        minX +
+        (maxX - minX) *
+        i / 200;
+
+      const y =
+        predictionFunction(x);
+
+      if (i === 0) {
+
+        ctx.moveTo(
+          xScale(x),
+          yScale(y)
+        );
+
+      } else {
+
+        ctx.lineTo(
+          xScale(x),
+          yScale(y)
+        );
+
+      }
+
+    }
+
+    ctx.stroke();
+
+  }
+
+
+  drawLine(
+    x =>
+      linearPredict(
+        linearModel,
+        x
+      )
+  );
+
+
+  drawLine(
+    x =>
+      polynomialPredict(
+        polyModel,
+        x
+      )
+  );
+
+
+  /* 예측값 */
+
+  ctx.fillStyle = "red";
+
+  const px =
+    xScale(selectedWeight);
+
+  const py =
+    yScale(prediction);
+
+
+  ctx.beginPath();
+
+  ctx.moveTo(px, py - 12);
+  ctx.lineTo(px + 4, py - 4);
+  ctx.lineTo(px + 12, py - 4);
+  ctx.lineTo(px + 6, py + 2);
+  ctx.lineTo(px + 9, py + 10);
+  ctx.lineTo(px, py + 5);
+  ctx.lineTo(px - 9, py + 10);
+  ctx.lineTo(px - 6, py + 2);
+  ctx.lineTo(px - 12, py - 4);
+  ctx.lineTo(px - 4, py - 4);
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  /* 축 제목 */
+
+  ctx.fillStyle = "#222";
+  ctx.font = "14px Arial";
+
+  ctx.fillText(
+    "Vehicle Weight (pounds)",
+    width / 2 - 70,
+    height - 20
+  );
+
+  ctx.save();
+
+  ctx.translate(
+    20,
+    height / 2
+  );
+
+  ctx.rotate(-Math.PI / 2);
+
+  ctx.fillText(
+    "Fuel Efficiency (MPG)",
+    -70,
+    0
+  );
+
+  ctx.restore();
+
+}
+
+
+/* ==============================
+   모델 성능 비교
+============================== */
+
+function compareModels() {
+
+  if (!linearModel || !polyModel) {
+    return;
+  }
+
+
+  const canvas =
+    document.getElementById(
+      "comparisonChart"
+    );
+
+  const ctx =
+    canvas.getContext("2d");
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  const width =
+    canvas.width;
+
+  const height =
+    canvas.height;
+
+
+  const maxMSE =
+    Math.max(
+      linearMSE,
+      polyMSE
+    );
+
+
+  /* MSE 막대 */
+
+  const barWidth = 120;
+
+  const x1 = 220;
+  const x2 = 560;
+
+  const baseY = 300;
+
+  const maxHeight = 200;
+
+
+  const h1 =
+    maxMSE === 0
+      ? 0
+      : linearMSE / maxMSE * maxHeight;
+
+  const h2 =
+    maxMSE === 0
+      ? 0
+      : polyMSE / maxMSE * maxHeight;
+
+
+  ctx.fillStyle = "#3b82f6";
+
+  ctx.fillRect(
+    x1,
+    baseY - h1,
+    barWidth,
+    h1
+  );
+
+  ctx.fillRect(
+    x2,
+    baseY - h2,
+    barWidth,
+    h2
+  );
+
+
+  ctx.fillStyle = "#222";
+  ctx.font = "16px Arial";
+
+  ctx.textAlign = "center";
+
+  ctx.fillText(
+    "Linear Regression",
+    x1 + barWidth / 2,
+    baseY + 30
+  );
+
+  ctx.fillText(
+    "Polynomial Regression",
+    x2 + barWidth / 2,
+    baseY + 30
+  );
+
+
+  ctx.fillText(
+    `MSE: ${linearMSE.toFixed(2)}`,
+    x1 + barWidth / 2,
+    baseY - h1 - 10
+  );
+
+  ctx.fillText(
+    `MSE: ${polyMSE.toFixed(2)}`,
+    x2 + barWidth / 2,
+    baseY - h2 - 10
+  );
+
+
+  ctx.textAlign = "left";
+
+
+  document.getElementById(
+    "evaluation"
+  ).innerHTML =
+
+`<h3>모델 평가 결과</h3>
+
+<ul>
+<li>선형회귀 MSE: ${linearMSE.toFixed(2)}</li>
+<li>비선형회귀 MSE: ${polyMSE.toFixed(2)}</li>
+<li>선형회귀 R²: ${linearR2.toFixed(4)}</li>
+<li>비선형회귀 R²: ${polyR2.toFixed(4)}</li>
+</ul>`;
+}
+
+
+/* ==============================
+   프로그램 시작
+============================== */
+
+loadData();
+
+</script>
+
+</body>
+</html>
