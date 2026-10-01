@@ -1,12 +1,13 @@
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>자동차 연비 예측 계산기</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -14,350 +15,955 @@
     body {
       margin: 0;
       padding: 40px 20px;
+
       background: #f1f5f9;
+
       color: #0f172a;
-      font-family: Arial, "Noto Sans KR", sans-serif;
+
+      font-family:
+        Arial,
+        "Noto Sans KR",
+        sans-serif;
     }
+
+
+    /* =================================
+       전체
+    ================================= */
 
     .container {
       max-width: 1000px;
-      margin: auto;
+      margin: 0 auto;
     }
 
-    /* =====================
-       상단 헤더
-    ===================== */
+
+    /* =================================
+       HERO
+    ================================= */
 
     .hero {
-      background: linear-gradient(135deg, #0f172a, #1e3a8a);
-      color: white;
-      padding: 38px;
-      border-radius: 24px;
+
+      padding: 42px;
+
       margin-bottom: 22px;
-      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.18);
+
+      border-radius: 24px;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0f172a 0%,
+          #172554 55%,
+          #1d4ed8 100%
+        );
+
+      box-shadow:
+        0 18px 40px
+        rgba(15, 23, 42, 0.20);
     }
+
+
+    .hero-top {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 16px;
+
+      margin-bottom: 20px;
+    }
+
 
     .hero-icon {
-      font-size: 42px;
-      margin-bottom: 12px;
+
+      width: 56px;
+      height: 56px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 16px;
+
+      background:
+        rgba(255,255,255,0.12);
+
+      font-size: 30px;
     }
+
+
+    .hero-label {
+
+      color: #bfdbfe;
+
+      font-size: 13px;
+
+      font-weight: 700;
+
+      letter-spacing: 1px;
+    }
+
 
     .hero h1 {
+
       margin: 0;
-      font-size: 32px;
-      letter-spacing: -1px;
+
+      font-size: 34px;
+
+      letter-spacing: -1.2px;
     }
+
 
     .hero p {
-      margin: 12px 0 0;
+
+      margin: 14px 0 0;
+
+      max-width: 650px;
+
       color: #dbeafe;
-      line-height: 1.7;
-    }
 
-    /* =====================
-       공통 카드
-    ===================== */
+      font-size: 15px;
 
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 28px;
-      margin-bottom: 22px;
-      box-shadow: 0 6px 25px rgba(15, 23, 42, 0.06);
-      border: 1px solid #e2e8f0;
-    }
-
-    .card-title {
-      margin: 0 0 8px;
-      font-size: 21px;
-      color: #0f172a;
-    }
-
-    .card-description {
-      margin: 0 0 24px;
-      color: #64748b;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    /* =====================
-       사용방법
-    ===================== */
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .info-box {
-      padding: 20px;
-      background: #f8fafc;
-      border-radius: 15px;
-      border: 1px solid #e2e8f0;
-    }
-
-    .info-box h3 {
-      margin: 0 0 10px;
-      font-size: 16px;
-      color: #1e3a8a;
-    }
-
-    .info-box p,
-    .info-box li {
-      color: #64748b;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .info-box ol {
-      padding-left: 20px;
-      margin-bottom: 0;
-    }
-
-    /* =====================
-       입력
-    ===================== */
-
-    label {
-      display: block;
-      margin-bottom: 9px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #334155;
-    }
-
-    .input-group {
-      margin-bottom: 22px;
-    }
-
-    input,
-    select {
-      width: 100%;
-      height: 52px;
-      padding: 0 16px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      background: #f8fafc;
-      color: #0f172a;
-      font-size: 16px;
-      outline: none;
-      transition: 0.2s;
-    }
-
-    input:focus,
-    select:focus {
-      background: white;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-    }
-
-    /* =====================
-       버튼
-    ===================== */
-
-    button {
-      width: 100%;
-      height: 54px;
-      border: none;
-      border-radius: 13px;
-      background: #2563eb;
-      color: white;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.22);
-    }
-
-    button:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    /* =====================
-       상태
-    ===================== */
-
-    .loading {
-      margin: 12px 2px;
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    .error {
-      margin: 12px 2px;
-      color: #dc2626;
-      font-size: 14px;
-    }
-
-    /* =====================
-       결과
-    ===================== */
-
-    .result {
-      margin-top: 22px;
-      padding: 28px;
-      border-radius: 18px;
-      background: linear-gradient(
-        135deg,
-        #eff6ff,
-        #f8fafc
-      );
-      border: 1px solid #bfdbfe;
-      color: #1e293b;
-      white-space: pre-line;
-      line-height: 2;
-      font-size: 17px;
-    }
-
-    /* =====================
-       그래프
-    ===================== */
-
-    .chart-wrapper {
-      overflow-x: auto;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      max-width: 900px;
-      height: auto;
-      margin: 20px auto 0;
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 15px;
-    }
-
-    /* =====================
-       모델 비교
-    ===================== */
-
-    .evaluation {
-      margin-top: 22px;
-      padding: 24px;
-      border-radius: 16px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      line-height: 1.9;
-      color: #475569;
-    }
-
-    .evaluation h3 {
-      margin-top: 0;
-      color: #0f172a;
-    }
-
-    /* =====================
-       하단
-    ===================== */
-
-    .notice {
-      padding: 20px;
-      background: #f8fafc;
-      border-radius: 15px;
-      color: #64748b;
-      font-size: 13px;
       line-height: 1.8;
     }
 
-    /* =====================
+
+    /* =================================
+       공통 카드
+    ================================= */
+
+    .card {
+
+      padding: 28px;
+
+      margin-bottom: 22px;
+
+      border:
+        1px solid #e2e8f0;
+
+      border-radius: 20px;
+
+      background: white;
+
+      box-shadow:
+        0 6px 25px
+        rgba(15, 23, 42, 0.06);
+    }
+
+
+    .card-header {
+
+      margin-bottom: 22px;
+    }
+
+
+    .card-title {
+
+      margin: 0 0 7px;
+
+      font-size: 21px;
+
+      letter-spacing: -0.4px;
+    }
+
+
+    .card-description {
+
+      margin: 0;
+
+      color: #64748b;
+
+      font-size: 14px;
+
+      line-height: 1.7;
+    }
+
+
+    /* =================================
+       안내 영역
+    ================================= */
+
+    .info-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 16px;
+    }
+
+
+    .info-box {
+
+      padding: 20px;
+
+      border:
+        1px solid #e2e8f0;
+
+      border-radius: 15px;
+
+      background: #f8fafc;
+    }
+
+
+    .info-box h3 {
+
+      margin: 0 0 10px;
+
+      color: #1d4ed8;
+
+      font-size: 16px;
+    }
+
+
+    .info-box p,
+    .info-box li {
+
+      color: #64748b;
+
+      font-size: 14px;
+
+      line-height: 1.7;
+    }
+
+
+    .info-box ul,
+    .info-box ol {
+
+      margin-bottom: 0;
+
+      padding-left: 20px;
+    }
+
+
+    /* =================================
+       입력 영역
+    ================================= */
+
+    .input-layout {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 18px;
+    }
+
+
+    .input-group {
+
+      margin-bottom: 4px;
+    }
+
+
+    label {
+
+      display: block;
+
+      margin-bottom: 9px;
+
+      color: #334155;
+
+      font-size: 14px;
+
+      font-weight: 700;
+    }
+
+
+    input {
+
+      width: 100%;
+
+      height: 54px;
+
+      padding:
+        0 16px;
+
+      border:
+        1px solid #cbd5e1;
+
+      border-radius: 12px;
+
+      background: #f8fafc;
+
+      color: #0f172a;
+
+      font-size: 16px;
+
+      outline: none;
+
+      transition: 0.2s;
+    }
+
+
+    input:focus {
+
+      background: white;
+
+      border-color: #2563eb;
+
+      box-shadow:
+        0 0 0 4px
+        rgba(37,99,235,0.10);
+    }
+
+
+    /* =================================
+       모델 선택
+    ================================= */
+
+    .model-selector {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 10px;
+    }
+
+
+    .model-option {
+
+      position: relative;
+    }
+
+
+    .model-option input {
+
+      position: absolute;
+
+      opacity: 0;
+
+      pointer-events: none;
+    }
+
+
+    .model-label {
+
+      height: 54px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      border:
+        1px solid #cbd5e1;
+
+      border-radius: 12px;
+
+      background: #f8fafc;
+
+      color: #475569;
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+
+    .model-label:hover {
+
+      border-color: #93c5fd;
+
+      background: #eff6ff;
+    }
+
+
+    .model-option input:checked
+    + .model-label {
+
+      border-color: #2563eb;
+
+      background: #eff6ff;
+
+      color: #1d4ed8;
+
+      box-shadow:
+        inset 0 0 0 1px
+        #2563eb;
+    }
+
+
+    .model-label span {
+
+      margin-right: 7px;
+
+      font-size: 17px;
+    }
+
+
+    /* =================================
+       예측 버튼
+    ================================= */
+
+    .predict-button {
+
+      margin-top: 22px;
+
+      width: 100%;
+
+      height: 58px;
+
+      border: none;
+
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #2563eb,
+          #1d4ed8
+        );
+
+      color: white;
+
+      font-size: 16px;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 8px 20px
+        rgba(37,99,235,0.22);
+
+      transition: 0.2s;
+    }
+
+
+    .predict-button:hover {
+
+      transform:
+        translateY(-2px);
+
+      box-shadow:
+        0 12px 25px
+        rgba(37,99,235,0.28);
+    }
+
+
+    /* =================================
+       상태
+    ================================= */
+
+    .loading {
+
+      margin:
+        10px 2px 20px;
+
+      color: #64748b;
+
+      font-size: 14px;
+    }
+
+
+    .error {
+
+      margin:
+        10px 2px 20px;
+
+      color: #dc2626;
+
+      font-size: 14px;
+    }
+
+
+    /* =================================
+       결과 카드
+    ================================= */
+
+    .result {
+
+      display: none;
+
+      margin-bottom: 22px;
+
+      padding: 28px;
+
+      border:
+        1px solid #bfdbfe;
+
+      border-radius: 20px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #eff6ff,
+          #ffffff
+        );
+
+      animation:
+        resultAppear 0.3s ease;
+    }
+
+
+    @keyframes resultAppear {
+
+      from {
+
+        opacity: 0;
+
+        transform:
+          translateY(8px);
+
+      }
+
+      to {
+
+        opacity: 1;
+
+        transform:
+          translateY(0);
+
+      }
+
+    }
+
+
+    .result-header {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      margin-bottom: 24px;
+    }
+
+
+    .result-title {
+
+      margin: 0;
+
+      font-size: 20px;
+    }
+
+
+    .model-badge {
+
+      padding:
+        7px 12px;
+
+      border-radius: 999px;
+
+      background: #dbeafe;
+
+      color: #1d4ed8;
+
+      font-size: 12px;
+
+      font-weight: 800;
+    }
+
+
+    .result-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 14px;
+    }
+
+
+    .result-main {
+
+      grid-column:
+        span 2;
+
+      padding: 25px;
+
+      border:
+        1px solid #bfdbfe;
+
+      border-radius: 16px;
+
+      background: white;
+
+      text-align: center;
+    }
+
+
+    .result-label {
+
+      color: #64748b;
+
+      font-size: 13px;
+
+      font-weight: 700;
+
+      margin-bottom: 7px;
+    }
+
+
+    .result-number {
+
+      color: #1d4ed8;
+
+      font-size: 42px;
+
+      font-weight: 900;
+
+      letter-spacing: -1px;
+    }
+
+
+    .result-unit {
+
+      margin-left: 5px;
+
+      color: #475569;
+
+      font-size: 16px;
+
+      font-weight: 700;
+    }
+
+
+    .result-small {
+
+      padding: 18px;
+
+      border-radius: 14px;
+
+      background: white;
+
+      border:
+        1px solid #e2e8f0;
+    }
+
+
+    .small-label {
+
+      color: #64748b;
+
+      font-size: 12px;
+
+      margin-bottom: 6px;
+    }
+
+
+    .small-value {
+
+      color: #0f172a;
+
+      font-size: 19px;
+
+      font-weight: 800;
+    }
+
+
+    .result-kml {
+
+      color: #0f172a;
+
+      font-size: 27px;
+
+      font-weight: 900;
+    }
+
+
+    .result-note {
+
+      margin-top: 18px;
+
+      color: #64748b;
+
+      font-size: 12px;
+
+      line-height: 1.6;
+    }
+
+
+    /* =================================
+       그래프
+    ================================= */
+
+    .chart-wrapper {
+
+      overflow-x: auto;
+    }
+
+
+    canvas {
+
+      display: block;
+
+      width: 100%;
+
+      max-width: 900px;
+
+      height: auto;
+
+      margin:
+        20px auto 0;
+
+      border:
+        1px solid #e2e8f0;
+
+      border-radius: 15px;
+
+      background: white;
+    }
+
+
+    /* =================================
+       평가
+    ================================= */
+
+    .evaluation {
+
+      margin-top: 22px;
+
+      padding: 24px;
+
+      border:
+        1px solid #e2e8f0;
+
+      border-radius: 16px;
+
+      background: #f8fafc;
+
+      color: #475569;
+
+      line-height: 1.9;
+    }
+
+
+    .evaluation h3 {
+
+      margin-top: 0;
+
+      color: #0f172a;
+    }
+
+
+    /* =================================
+       비교 버튼
+    ================================= */
+
+    .compare-button {
+
+      width: 100%;
+
+      height: 52px;
+
+      border:
+        1px solid #2563eb;
+
+      border-radius: 12px;
+
+      background: white;
+
+      color: #1d4ed8;
+
+      font-size: 15px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+
+    .compare-button:hover {
+
+      background: #eff6ff;
+    }
+
+
+    /* =================================
+       하단
+    ================================= */
+
+    .notice {
+
+      padding: 20px;
+
+      margin-bottom: 20px;
+
+      border-radius: 15px;
+
+      background: #e2e8f0;
+
+      color: #64748b;
+
+      font-size: 13px;
+
+      line-height: 1.8;
+    }
+
+
+    /* =================================
        모바일
-    ===================== */
+    ================================= */
 
     @media (max-width: 700px) {
 
       body {
+
         padding: 16px;
       }
 
+
       .hero {
+
         padding: 28px 22px;
+
         border-radius: 20px;
       }
 
+
       .hero h1 {
+
+        font-size: 27px;
+      }
+
+
+      .hero-icon {
+
+        width: 50px;
+        height: 50px;
+
         font-size: 26px;
       }
 
-      .hero-icon {
-        font-size: 34px;
-      }
 
       .card {
+
         padding: 20px;
+
         border-radius: 17px;
       }
 
-      .info-grid {
+
+      .info-grid,
+      .input-layout {
+
         grid-template-columns: 1fr;
       }
 
-      .result {
-        padding: 20px;
-        font-size: 15px;
+
+      .result-grid {
+
+        grid-template-columns: 1fr;
+      }
+
+
+      .result-main {
+
+        grid-column:
+          span 1;
+      }
+
+
+      .result-number {
+
+        font-size: 36px;
       }
 
     }
+
   </style>
+
 </head>
+
 
 <body>
 
+
 <div class="container">
 
-  <!-- =====================
-       HEADER
-  ===================== -->
+
+  <!-- ============================
+       HERO
+  ============================= -->
 
   <div class="hero">
 
-    <div class="hero-icon">
-      🚗
+    <div class="hero-top">
+
+      <div class="hero-icon">
+        🚗
+      </div>
+
+      <div>
+
+        <div class="hero-label">
+          MACHINE LEARNING
+        </div>
+
+        <h1>
+          자동차 연비 예측 계산기
+        </h1>
+
+      </div>
+
     </div>
 
-    <h1>
-      자동차 연비 예측 계산기
-    </h1>
 
     <p>
-      자동차의 무게를 입력하면
-      머신러닝 회귀 모델을 이용하여
-      예상 연비를 계산합니다.
+
+      자동차의 무게 데이터를 기반으로
+      회귀 모델을 학습하여 예상 연비를 계산합니다.
+
+      선형회귀와 비선형회귀 모델을 비교하고
+      데이터의 관계를 그래프로 확인할 수 있습니다.
+
     </p>
 
   </div>
 
 
-  <!-- =====================
-       설명
-  ===================== -->
+  <!-- ============================
+       안내
+  ============================= -->
 
   <div class="card">
 
-    <h2 class="card-title">
-      📌 계산기 사용 안내
-    </h2>
+    <div class="card-header">
 
-    <p class="card-description">
-      자동차 데이터를 기반으로 선형회귀와
-      비선형회귀 모델을 학습하여 연비를 예측합니다.
-    </p>
+      <h2 class="card-title">
+        📌 계산기 사용 안내
+      </h2>
+
+      <p class="card-description">
+
+        자동차 무게와 연비 데이터를 이용하여
+        머신러닝 모델을 학습합니다.
+
+      </p>
+
+    </div>
+
 
     <div class="info-grid">
+
 
       <div class="info-box">
 
         <h3>
-          📈 예측 방법
+          📈 예측 모델
         </h3>
 
         <ul>
+
           <li>
             <b>선형회귀</b> -
             데이터의 경향을 직선으로 표현
@@ -367,6 +973,7 @@
             <b>비선형회귀</b> -
             데이터의 경향을 곡선으로 표현
           </li>
+
         </ul>
 
       </div>
@@ -379,116 +986,277 @@
         </h3>
 
         <ol>
+
           <li>자동차 무게를 입력합니다.</li>
+
           <li>예측 모델을 선택합니다.</li>
-          <li>연비 예측 버튼을 누릅니다.</li>
-          <li>결과와 그래프를 확인합니다.</li>
+
+          <li>연비 예측하기를 클릭합니다.</li>
+
+          <li>예측 결과와 그래프를 확인합니다.</li>
+
         </ol>
 
       </div>
+
 
     </div>
 
   </div>
 
 
-  <!-- =====================
-       입력 카드
-  ===================== -->
+  <!-- ============================
+       입력
+  ============================= -->
 
   <div class="card">
 
-    <h2 class="card-title">
-      🚘 자동차 정보 입력
-    </h2>
+    <div class="card-header">
 
-    <p class="card-description">
-      자동차의 무게를 파운드(lb) 단위로 입력해주세요.
-    </p>
+      <h2 class="card-title">
+        🚘 자동차 정보 입력
+      </h2>
 
+      <p class="card-description">
 
-    <div class="input-group">
+        자동차의 무게를 입력하고
+        예측 모델을 선택해주세요.
 
-      <label for="weight">
-        자동차 무게 (파운드)
-      </label>
-
-      <input
-        type="number"
-        id="weight"
-        value="3000"
-        min="1"
-        placeholder="예: 3000"
-      >
+      </p>
 
     </div>
 
 
-    <div class="input-group">
+    <div class="input-layout">
 
-      <label for="model">
-        예측 모델
-      </label>
 
-      <select id="model">
+      <div class="input-group">
 
-        <option value="linear">
-          선형회귀
-        </option>
+        <label for="weight">
+          자동차 무게 (파운드)
+        </label>
 
-        <option value="poly">
-          비선형회귀
-        </option>
+        <input
+          type="number"
+          id="weight"
+          value="3000"
+          min="1"
+          placeholder="예: 3000"
+        >
 
-      </select>
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          예측 모델
+        </label>
+
+
+        <div class="model-selector">
+
+
+          <div class="model-option">
+
+            <input
+              type="radio"
+              name="model"
+              id="linearModel"
+              value="linear"
+              checked
+            >
+
+            <label
+              for="linearModel"
+              class="model-label"
+            >
+
+              <span>📏</span>
+
+              선형회귀
+
+            </label>
+
+          </div>
+
+
+          <div class="model-option">
+
+            <input
+              type="radio"
+              name="model"
+              id="polyModel"
+              value="poly"
+            >
+
+            <label
+              for="polyModel"
+              class="model-label"
+            >
+
+              <span>〰️</span>
+
+              비선형회귀
+
+            </label>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
 
     </div>
 
 
-    <button onclick="predictMPG()">
+    <button
+      class="predict-button"
+      onclick="predictMPG()"
+    >
+
       🚗 연비 예측하기
+
     </button>
 
   </div>
 
 
-  <!-- =====================
+  <!-- ============================
        상태
-  ===================== -->
+  ============================= -->
 
   <div
     id="status"
     class="loading"
   >
+
     자동차 데이터를 불러오는 중...
+
   </div>
 
 
-  <!-- =====================
-       결과 카드
-  ===================== -->
+  <!-- ============================
+       결과
+  ============================= -->
 
   <div
     id="result"
     class="result"
-    style="display:none;"
-  ></div>
+  >
+
+    <div class="result-header">
+
+      <h2 class="result-title">
+        🎯 예측 결과
+      </h2>
+
+      <div
+        id="modelBadge"
+        class="model-badge"
+      >
+        선형회귀
+      </div>
+
+    </div>
 
 
-  <!-- =====================
-       예측 그래프
-  ===================== -->
+    <div class="result-grid">
+
+
+      <div class="result-main">
+
+        <div class="result-label">
+          예상 연비
+        </div>
+
+        <div>
+
+          <span
+            id="mpgResult"
+            class="result-number"
+          >
+            0.00
+          </span>
+
+          <span class="result-unit">
+            MPG
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="result-small">
+
+        <div class="small-label">
+          자동차 무게
+        </div>
+
+        <div
+          id="weightResult"
+          class="small-value"
+        >
+          0 lb
+        </div>
+
+      </div>
+
+
+      <div class="result-small">
+
+        <div class="small-label">
+          km/L 환산
+        </div>
+
+        <div
+          id="kmResult"
+          class="result-kml"
+        >
+          0.00
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <div class="result-note">
+
+      ※ MPG는 미국식 연비 단위입니다.
+      km/L는 MPG 값을 환산한 값이며,
+      실제 차량 연비와는 차이가 있을 수 있습니다.
+
+    </div>
+
+  </div>
+
+
+  <!-- ============================
+       그래프
+  ============================= -->
 
   <div class="card">
 
-    <h2 class="card-title">
-      📈 연비 예측 그래프
-    </h2>
+    <div class="card-header">
 
-    <p class="card-description">
-      자동차 무게와 실제 연비 데이터의 관계를
-      회귀선과 함께 보여줍니다.
-    </p>
+      <h2 class="card-title">
+        📈 연비 예측 그래프
+      </h2>
+
+      <p class="card-description">
+
+        자동차 무게와 실제 연비 데이터의 관계를
+        회귀선과 함께 보여줍니다.
+
+      </p>
+
+    </div>
+
 
     <div class="chart-wrapper">
 
@@ -503,24 +1271,35 @@
   </div>
 
 
-  <!-- =====================
+  <!-- ============================
        모델 비교
-  ===================== -->
+  ============================= -->
 
   <div class="card">
 
-    <h2 class="card-title">
-      📊 모델 성능 비교
-    </h2>
+    <div class="card-header">
 
-    <p class="card-description">
-      두 회귀 모델의 예측 오차(MSE)와
-      설명력(R²)을 비교합니다.
-    </p>
+      <h2 class="card-title">
+        📊 모델 성능 비교
+      </h2>
+
+      <p class="card-description">
+
+        두 모델의 예측 오차(MSE)와
+        데이터 설명력(R²)을 비교합니다.
+
+      </p>
+
+    </div>
 
 
-    <button onclick="compareModels()">
+    <button
+      class="compare-button"
+      onclick="compareModels()"
+    >
+
       모델 성능 비교하기
+
     </button>
 
 
@@ -539,53 +1318,72 @@
       id="evaluation"
       class="evaluation"
     >
+
       모델 평가 결과를 계산하는 중...
+
     </div>
 
   </div>
 
 
-  <!-- =====================
+  <!-- ============================
        안내
-  ===================== -->
+  ============================= -->
 
   <div class="notice">
 
     <div>
+
       ※ MPG는 미국식 연비 단위이며
       km/L로 변환하여 함께 표시합니다.
+
     </div>
 
     <div>
-      ※ 실제 연비는 운전 습관과 도로 상태 등에 따라
+
+      ※ 실제 연비는 운전 습관,
+      도로 상태, 차량 상태 등에 따라
       달라질 수 있습니다.
+
     </div>
 
   </div>
 
+
 </div>
+
 
 
 <script>
 
+
+/* =========================================
+   데이터
+========================================= */
+
 const DATA_URL =
   "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/mpg.csv";
+
 
 let data = [];
 
 let linearModel = null;
+
 let polyModel = null;
 
 let linearMSE = 0;
+
 let polyMSE = 0;
 
 let linearR2 = 0;
+
 let polyR2 = 0;
 
 
-/* ==============================
-   CSV 데이터 불러오기
-============================== */
+
+/* =========================================
+   데이터 불러오기
+========================================= */
 
 async function loadData() {
 
@@ -593,6 +1391,7 @@ async function loadData() {
 
     const response =
       await fetch(DATA_URL);
+
 
     if (!response.ok) {
 
@@ -602,17 +1401,22 @@ async function loadData() {
 
     }
 
+
     const csv =
       await response.text();
+
 
     const lines =
       csv.trim().split("\n");
 
+
     const headers =
       lines[0].split(",");
 
+
     const weightIndex =
       headers.indexOf("weight");
+
 
     const mpgIndex =
       headers.indexOf("mpg");
@@ -625,13 +1429,21 @@ async function loadData() {
     ) {
 
       const row =
-        parseCSVLine(lines[i]);
+        parseCSVLine(
+          lines[i]
+        );
+
 
       const weight =
-        Number(row[weightIndex]);
+        Number(
+          row[weightIndex]
+        );
+
 
       const mpg =
-        Number(row[mpgIndex]);
+        Number(
+          row[mpgIndex]
+        );
 
 
       if (
@@ -640,8 +1452,13 @@ async function loadData() {
       ) {
 
         data.push({
-          weight: weight,
-          mpg: mpg
+
+          weight:
+            weight,
+
+          mpg:
+            mpg
+
         });
 
       }
@@ -661,7 +1478,9 @@ async function loadData() {
     compareModels();
 
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     document.getElementById(
       "status"
@@ -682,9 +1501,10 @@ async function loadData() {
 }
 
 
-/* ==============================
-   CSV 파싱
-============================== */
+
+/* =========================================
+   CSV
+========================================= */
 
 function parseCSVLine(line) {
 
@@ -717,7 +1537,9 @@ function parseCSVLine(line) {
       !insideQuotes
     ) {
 
-      result.push(current);
+      result.push(
+        current
+      );
 
       current = "";
 
@@ -732,20 +1554,26 @@ function parseCSVLine(line) {
   }
 
 
-  result.push(current);
+  result.push(
+    current
+  );
+
 
   return result;
 
 }
 
 
-/* ==============================
-   행렬 계산
-============================== */
+
+/* =========================================
+   행렬
+========================================= */
 
 function solveMatrix(A, b) {
 
-  const n = A.length;
+  const n =
+    A.length;
+
 
   const matrix =
     A.map(
@@ -762,7 +1590,8 @@ function solveMatrix(A, b) {
     i++
   ) {
 
-    let maxRow = i;
+    let maxRow =
+      i;
 
 
     for (
@@ -772,11 +1601,17 @@ function solveMatrix(A, b) {
     ) {
 
       if (
-        Math.abs(matrix[k][i]) >
-        Math.abs(matrix[maxRow][i])
+        Math.abs(
+          matrix[k][i]
+        )
+        >
+        Math.abs(
+          matrix[maxRow][i]
+        )
       ) {
 
-        maxRow = k;
+        maxRow =
+          k;
 
       }
 
@@ -860,17 +1695,21 @@ function solveMatrix(A, b) {
 }
 
 
-/* ==============================
+
+/* =========================================
    선형회귀
-============================== */
+========================================= */
 
 function trainLinearModel(
   trainingData
 ) {
 
   let sumX = 0;
+
   let sumY = 0;
+
   let sumXX = 0;
+
   let sumXY = 0;
 
 
@@ -878,28 +1717,33 @@ function trainLinearModel(
     trainingData.length;
 
 
-  trainingData.forEach(d => {
+  trainingData.forEach(
+    d => {
 
-    sumX += d.weight;
+      sumX +=
+        d.weight;
 
-    sumY += d.mpg;
+      sumY +=
+        d.mpg;
 
-    sumXX +=
-      d.weight *
-      d.weight;
+      sumXX +=
+        d.weight *
+        d.weight;
 
-    sumXY +=
-      d.weight *
-      d.mpg;
+      sumXY +=
+        d.weight *
+        d.mpg;
 
-  });
+    }
+  );
 
 
   const slope =
     (
       n * sumXY -
       sumX * sumY
-    ) /
+    )
+    /
     (
       n * sumXX -
       sumX * sumX
@@ -910,101 +1754,128 @@ function trainLinearModel(
     (
       sumY -
       slope * sumX
-    ) / n;
+    )
+    / n;
 
 
   return {
-    slope: slope,
-    intercept: intercept
+
+    slope:
+      slope,
+
+    intercept:
+      intercept
+
   };
 
 }
 
 
-/* ==============================
-   2차 다항회귀
-============================== */
+
+/* =========================================
+   다항회귀
+========================================= */
 
 function trainPolynomialModel(
   trainingData
 ) {
 
   let A = [
+
     [0, 0, 0],
+
     [0, 0, 0],
+
     [0, 0, 0]
+
   ];
 
+
   let B = [
+
     0,
     0,
     0
+
   ];
 
 
-  trainingData.forEach(d => {
+  trainingData.forEach(
+    d => {
 
-    const x =
-      d.weight;
+      const x =
+        d.weight;
 
-    const y =
-      d.mpg;
-
-
-    const values = [
-      1,
-      x,
-      x * x
-    ];
+      const y =
+        d.mpg;
 
 
-    for (
-      let i = 0;
-      i < 3;
-      i++
-    ) {
+      const values = [
 
-      B[i] +=
-        values[i] * y;
+        1,
+
+        x,
+
+        x * x
+
+      ];
 
 
       for (
-        let j = 0;
-        j < 3;
-        j++
+        let i = 0;
+        i < 3;
+        i++
       ) {
 
-        A[i][j] +=
-          values[i] *
-          values[j];
+        B[i] +=
+          values[i] * y;
+
+
+        for (
+          let j = 0;
+          j < 3;
+          j++
+        ) {
+
+          A[i][j] +=
+            values[i] *
+            values[j];
+
+        }
 
       }
 
     }
-
-  });
+  );
 
 
   const coefficients =
-    solveMatrix(A, B);
+    solveMatrix(
+      A,
+      B
+    );
 
 
   return {
 
-    a: coefficients[0],
+    a:
+      coefficients[0],
 
-    b: coefficients[1],
+    b:
+      coefficients[1],
 
-    c: coefficients[2]
+    c:
+      coefficients[2]
 
   };
 
 }
 
 
-/* ==============================
+
+/* =========================================
    예측
-============================== */
+========================================= */
 
 function linearPredict(
   model,
@@ -1012,8 +1883,12 @@ function linearPredict(
 ) {
 
   return (
+
     model.intercept +
-    model.slope * x
+
+    model.slope *
+    x
+
   );
 
 }
@@ -1025,29 +1900,40 @@ function polynomialPredict(
 ) {
 
   return (
+
     model.a +
-    model.b * x +
-    model.c * x * x
+
+    model.b *
+    x +
+
+    model.c *
+    x *
+    x
+
   );
 
 }
 
 
-/* ==============================
-   모델 학습 및 평가
-============================== */
+
+/* =========================================
+   모델 학습
+========================================= */
 
 function trainModels() {
 
   const shuffled =
     [...data].sort(
-      () => Math.random() - 0.5
+      () =>
+        Math.random() -
+        0.5
     );
 
 
   const testSize =
     Math.floor(
-      shuffled.length * 0.2
+      shuffled.length *
+      0.2
     );
 
 
@@ -1134,16 +2020,18 @@ function trainModels() {
 }
 
 
-/* ==============================
+
+/* =========================================
    MSE
-============================== */
+========================================= */
 
 function calculateMSE(
   actual,
   predicted
 ) {
 
-  let total = 0;
+  let total =
+    0;
 
 
   for (
@@ -1158,7 +2046,8 @@ function calculateMSE(
 
 
     total +=
-      error * error;
+      error *
+      error;
 
   }
 
@@ -1171,9 +2060,10 @@ function calculateMSE(
 }
 
 
-/* ==============================
+
+/* =========================================
    R²
-============================== */
+========================================= */
 
 function calculateR2(
   actual,
@@ -1182,15 +2072,20 @@ function calculateR2(
 
   const mean =
     actual.reduce(
-      (a, b) => a + b,
+      (a, b) =>
+        a + b,
       0
-    ) /
+    )
+    /
     actual.length;
 
 
-  let ssTot = 0;
+  let ssTot =
+    0;
 
-  let ssRes = 0;
+
+  let ssRes =
+    0;
 
 
   for (
@@ -1201,7 +2096,8 @@ function calculateR2(
 
     ssTot +=
       Math.pow(
-        actual[i] - mean,
+        actual[i] -
+        mean,
         2
       );
 
@@ -1218,15 +2114,17 @@ function calculateR2(
 
   return (
     1 -
-    ssRes / ssTot
+    ssRes /
+    ssTot
   );
 
 }
 
 
-/* ==============================
+
+/* =========================================
    연비 예측
-============================== */
+========================================= */
 
 function predictMPG() {
 
@@ -1266,9 +2164,9 @@ function predictMPG() {
   }
 
 
-  const modelChoice =
-    document.getElementById(
-      "model"
+  const selectedModel =
+    document.querySelector(
+      'input[name="model"]:checked'
     ).value;
 
 
@@ -1276,7 +2174,8 @@ function predictMPG() {
 
 
   if (
-    modelChoice === "linear"
+    selectedModel ===
+    "linear"
   ) {
 
     prediction =
@@ -1303,35 +2202,41 @@ function predictMPG() {
     0.425144;
 
 
-  const result =
+  /* 결과 표시 */
 
-`선택한 모델: ${
-  modelChoice === "linear"
-    ? "선형회귀"
-    : "비선형회귀"
-}
-
-자동차 무게: ${weight.toFixed(0)} 파운드
-
-예측 연비: ${prediction.toFixed(2)} MPG
-
-약 ${kmPerLiter.toFixed(2)} km/L
-
-※ 실제 연비는 운전 습관과 도로 상태 등에 따라 달라질 수 있습니다.`;
-
-
-  const resultBox =
-    document.getElementById(
-      "result"
-    );
-
-
-  resultBox.style.display =
+  document.getElementById(
+    "result"
+  ).style.display =
     "block";
 
 
-  resultBox.textContent =
-    result;
+  document.getElementById(
+    "mpgResult"
+  ).textContent =
+    prediction.toFixed(2);
+
+
+  document.getElementById(
+    "kmResult"
+  ).textContent =
+    kmPerLiter.toFixed(2)
+    + " km/L";
+
+
+  document.getElementById(
+    "weightResult"
+  ).textContent =
+    weight.toFixed(0)
+    + " lb";
+
+
+  document.getElementById(
+    "modelBadge"
+  ).textContent =
+
+    selectedModel === "linear"
+      ? "선형회귀"
+      : "비선형회귀";
 
 
   drawPredictionChart(
@@ -1339,12 +2244,23 @@ function predictMPG() {
     prediction
   );
 
+
+  /* 결과 위치로 이동 */
+
+  document.getElementById(
+    "result"
+  ).scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
 }
 
 
-/* ==============================
+
+/* =========================================
    예측 그래프
-============================== */
+========================================= */
 
 function drawPredictionChart(
   selectedWeight,
@@ -1358,11 +2274,14 @@ function drawPredictionChart(
 
 
   const ctx =
-    canvas.getContext("2d");
+    canvas.getContext(
+      "2d"
+    );
 
 
   const width =
     canvas.width;
+
 
   const height =
     canvas.height;
@@ -1400,7 +2319,8 @@ function drawPredictionChart(
     );
 
 
-  const minY = 0;
+  const minY =
+    0;
 
 
   const maxY =
@@ -1410,25 +2330,39 @@ function drawPredictionChart(
     ) + 5;
 
 
-  const left = 70;
-  const right = 30;
-  const top = 30;
-  const bottom = 60;
+  const left =
+    70;
+
+
+  const right =
+    30;
+
+
+  const top =
+    30;
+
+
+  const bottom =
+    60;
 
 
   function xScale(x) {
 
     return (
+
       left +
+
       (
         (x - minX) /
         (maxX - minX)
-      ) *
+      )
+      *
       (
         width -
         left -
         right
       )
+
     );
 
   }
@@ -1437,17 +2371,21 @@ function drawPredictionChart(
   function yScale(y) {
 
     return (
+
       height -
       bottom -
+
       (
         (y - minY) /
         (maxY - minY)
-      ) *
+      )
+      *
       (
         height -
         top -
         bottom
       )
+
     );
 
   }
@@ -1458,50 +2396,68 @@ function drawPredictionChart(
   ctx.strokeStyle =
     "#334155";
 
-  ctx.lineWidth = 1;
+
+  ctx.lineWidth =
+    1;
 
 
   ctx.beginPath();
+
 
   ctx.moveTo(
     left,
     top
   );
 
+
   ctx.lineTo(
     left,
     height - bottom
   );
+
 
   ctx.lineTo(
     width - right,
     height - bottom
   );
 
+
   ctx.stroke();
 
 
-  /* 실제 데이터 */
+  /* 데이터 */
 
   ctx.fillStyle =
-    "rgba(37, 99, 235, 0.4)";
+    "rgba(37,99,235,0.4)";
 
 
-  data.forEach(d => {
+  data.forEach(
+    d => {
 
-    ctx.beginPath();
+      ctx.beginPath();
 
-    ctx.arc(
-      xScale(d.weight),
-      yScale(d.mpg),
-      3,
-      0,
-      Math.PI * 2
-    );
 
-    ctx.fill();
+      ctx.arc(
+        xScale(
+          d.weight
+        ),
 
-  });
+        yScale(
+          d.mpg
+        ),
+
+        3,
+
+        0,
+
+        Math.PI * 2
+      );
+
+
+      ctx.fill();
+
+    }
+  );
 
 
   /* 회귀선 */
@@ -1524,13 +2480,16 @@ function drawPredictionChart(
         (
           maxX -
           minX
-        ) *
+        )
+        *
         i /
         200;
 
 
       const y =
-        predictionFunction(x);
+        predictionFunction(
+          x
+        );
 
 
       if (i === 0) {
@@ -1597,65 +2556,35 @@ function drawPredictionChart(
 
   ctx.beginPath();
 
-  ctx.moveTo(
+
+  ctx.arc(
     px,
-    py - 12
+    py,
+    8,
+    0,
+    Math.PI * 2
   );
 
-  ctx.lineTo(
-    px + 4,
-    py - 4
-  );
-
-  ctx.lineTo(
-    px + 12,
-    py - 4
-  );
-
-  ctx.lineTo(
-    px + 6,
-    py + 2
-  );
-
-  ctx.lineTo(
-    px + 9,
-    py + 10
-  );
-
-  ctx.lineTo(
-    px,
-    py + 5
-  );
-
-  ctx.lineTo(
-    px - 9,
-    py + 10
-  );
-
-  ctx.lineTo(
-    px - 6,
-    py + 2
-  );
-
-  ctx.lineTo(
-    px - 12,
-    py - 4
-  );
-
-  ctx.lineTo(
-    px - 4,
-    py - 4
-  );
-
-  ctx.closePath();
 
   ctx.fill();
+
+
+  ctx.strokeStyle =
+    "white";
+
+
+  ctx.lineWidth =
+    3;
+
+
+  ctx.stroke();
 
 
   /* 축 제목 */
 
   ctx.fillStyle =
-    "#222";
+    "#334155";
+
 
   ctx.font =
     "14px Arial";
@@ -1694,9 +2623,10 @@ function drawPredictionChart(
 }
 
 
-/* ==============================
-   모델 성능 비교
-============================== */
+
+/* =========================================
+   모델 비교
+========================================= */
 
 function compareModels() {
 
@@ -1717,7 +2647,9 @@ function compareModels() {
 
 
   const ctx =
-    canvas.getContext("2d");
+    canvas.getContext(
+      "2d"
+    );
 
 
   ctx.clearRect(
@@ -1728,6 +2660,14 @@ function compareModels() {
   );
 
 
+  const width =
+    canvas.width;
+
+
+  const height =
+    canvas.height;
+
+
   const maxMSE =
     Math.max(
       linearMSE,
@@ -1735,15 +2675,24 @@ function compareModels() {
     );
 
 
-  const barWidth = 120;
+  const barWidth =
+    120;
 
-  const x1 = 220;
 
-  const x2 = 560;
+  const x1 =
+    220;
 
-  const baseY = 300;
 
-  const maxHeight = 200;
+  const x2 =
+    560;
+
+
+  const baseY =
+    300;
+
+
+  const maxHeight =
+    200;
 
 
   const h1 =
@@ -1785,8 +2734,10 @@ function compareModels() {
   ctx.fillStyle =
     "#222";
 
+
   ctx.font =
     "16px Arial";
+
 
   ctx.textAlign =
     "center";
@@ -1857,14 +2808,15 @@ function compareModels() {
 }
 
 
-/* ==============================
-   프로그램 시작
-============================== */
+
+/* =========================================
+   시작
+========================================= */
 
 loadData();
 
 </script>
 
+
 </body>
 </html>
-```
